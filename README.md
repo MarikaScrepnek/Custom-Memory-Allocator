@@ -165,6 +165,9 @@ should be merged immediately (as shown in Figure 1)._
 
 ## Grading Distribution
 
+* **You should not change the provided code** as we will replace it for our grading. This can easily
+  result in a 0 for the assignment. **Be very careful about this.** You can add your own code/files
+  as needed.
 * `main.c` contains a main function that tests your allocator. The max score is 390. If you compile
   it and run it, it will give you a score and also tell you which test cases have failed.
 * Code that does not compile with CMake gets a 0.
