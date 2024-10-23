@@ -11,6 +11,7 @@ on:
 jobs:
   run-autograding-tests:
     runs-on: self-hosted
+    timeout-minutes: 10
     container: ghcr.io/sfu-cmpt-201/runner
     steps:
       - name: Checkout
