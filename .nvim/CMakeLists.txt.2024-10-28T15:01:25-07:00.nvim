@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.14)
+
+project("A9 Marika Screpnek." LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_BUILD_TYPE Debug)
+
+include_directories(include)
+
+enable_testing()
+
+file(GLOB SOURCES "src/*.c")
+
+add_executable(main ${SOURCES})
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -g")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")

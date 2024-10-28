@@ -1,0 +1,10 @@
+{"version": 2, "width": 141, "height": 42, "timestamp": 1730151474, "idle_time_limit": 5.0, "env": {"SHELL": "/usr/bin/zsh", "TERM": "xterm-256color"}}
+[0.246173, "o", "\u001b[1m\u001b[7m%\u001b[27m\u001b[1m\u001b[0m                                                                                                                                            \r \r"]
+[0.247548, "o", "\u001b]2;cmpt201@088eb6f02f20:~/units/04-long-assignments/a9-MarikaScrepnek\u0007\u001b]1;..arikaScrepnek\u0007"]
+[0.255369, "o", "\u001b]7;file://088eb6f02f20/home/cmpt201/units/04-long-assignments/a9-MarikaScrepnek\u001b\\"]
+[0.322435, "o", "\r\u001b[0m\u001b[27m\u001b[24m\u001b[J\u001b[35m[recording] \u001b[34m~/units/04-long-assignments/a9-MarikaScrepnek\u001b[32m❯\u001b[39m \u001b[K"]
+[0.32261, "o", "\u001b[?1h\u001b=\u001b[?2004h"]
+[15.989857, "i", "n"]
+[15.994768, "o", "n"]
+[16.00167, "o", "\b\u001b[1m\u001b[31mn\u001b[0m\u001b[39m"]
+[16.002979, "o", "\b\u001b[1m\u001b[31mn\u001b[0m\u001b[39m\u001b[92mvim alloc.c\u001b[39m\u001b[11D"]

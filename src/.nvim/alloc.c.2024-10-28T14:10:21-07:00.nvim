@@ -66,10 +66,10 @@ int find_largest_chunk_size() {
     return 0;
   }
   struct header *current = head;
-  int largest = head->size - sizeof(struct header);
+  int largest = head->size;
   while (current != NULL) {
-    if ((current->size - sizeof(struct header)) > largest) {
-      largest = current->size - sizeof(struct header);
+    if (current->size > largest) {
+      largest = current->size;
     }
     current = current->next;
   }
@@ -81,10 +81,10 @@ int find_smallest_chunk_size() {
     return INT_MAX;
   }
   struct header *current = head;
-  int smallest = head->size - sizeof(struct header);
+  int smallest = head->size;
   while (current != NULL) {
-    if ((current->size - sizeof(struct header)) < smallest) {
-      smallest = current->size - sizeof(struct header);
+    if (current->size < smallest) {
+      smallest = current->size;
     }
     current = current->next;
   }
@@ -251,8 +251,6 @@ void *alloc(int size) {
     } else {
       top->size += added_size;
       free_size += added_size;
-      smallest_free_chunk_size = find_smallest_chunk_size();
-      largest_free_chunk_size = find_largest_chunk_size();
     }
   }
   if (current_alg == FIRST_FIT) {
