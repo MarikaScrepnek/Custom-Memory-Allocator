@@ -10,6 +10,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define ALLOCATED_BLOCK ((struct header *)0xDEADBEEF)
+
 // pointer to head of linked list
 static struct header *head = NULL;
 // pointer to last address on heap
@@ -270,14 +272,14 @@ void coalesce_below(struct header *block) {
     add_to_linked_list(block, block->size);
     return;
   }
-  struct header *current = head;
-  while (current != NULL) {
-    if (block == (struct header *)((char *)current + current->size)) {
+  struct header* current = head;
+  while(current != NULL) {
+    if (block == (struct header*)((char*) current + current->size)) {
       remove_from_linked_list(current);
-      add_to_linked_list((void *)current, block->size + current->size);
+      add_to_linked_list((void*)current, block->size + current->size);
       return;
     }
-    current = current->next;
+    current = current ->next;
   }
 }
 
@@ -286,18 +288,18 @@ void coalesce_above(struct header *block) {
     add_to_linked_list(block, block->size);
     return;
   }
-  struct header *current = head;
-  while (current != NULL) {
-    if (current == (struct header *)((char *)block + block->size)) {
+  struct header* current = head;
+  while(current != NULL) {
+    if (current == (struct header*)((char*) block + block->size)) {
       remove_from_linked_list(current);
-      add_to_linked_list((void *)block, block->size + current->size);
+      add_to_linked_list((void*)block, block->size + current->size);
       return;
     }
-    current = current->next;
+    current = current ->next;
   }
 }
 
-void coalesce(struct header *block) {
+void coalesce(struct header* block) {
   if (head == NULL) {
     add_to_linked_list(block, block->size);
     return;

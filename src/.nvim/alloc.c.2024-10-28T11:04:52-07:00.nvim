@@ -10,6 +10,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define ALLOCATED_BLOCK ((struct header *)0xDEADBEEF)
+
 // pointer to head of linked list
 static struct header *head = NULL;
 // pointer to last address on heap
@@ -261,61 +263,25 @@ void *alloc(int size) {
     to_allocate = worst_fit_alg(size);
   }
   split_block(to_allocate, size);
+  to_allocate->next = ALLOCATED_BLOCK;
   void *allocated = (char *)to_allocate + sizeof(struct header);
   return allocated;
 }
 
-void coalesce_below(struct header *block) {
+int check_if_block_is_free(struct header *next_block) {
   if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
+    return 0;
   }
-  struct header *current = head;
-  while (current != NULL) {
-    if (block == (struct header *)((char *)current + current->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)current, block->size + current->size);
-      return;
-    }
-    current = current->next;
-  }
-}
-
-void coalesce_above(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  struct header *current = head;
-  while (current != NULL) {
-    if (current == (struct header *)((char *)block + block->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)block, block->size + current->size);
-      return;
-    }
-    current = current->next;
-  }
-}
-
-void coalesce(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  coalesce_above(block);
-  coalesce_below(block);
-  return;
 }
 
 void dealloc(void *to_free) {
   if (to_free == NULL) {
     return;
   }
-
-  struct header *header_to_free =
+  struct header *head_of_to_free =
       (struct header *)((char *)to_free - sizeof(struct header));
-  coalesce_above(header_to_free);
-  coalesce_below(header_to_free);
+  struct header *next_block = (struct header *)to_free + head_of_to_free->size;
+  struct header *current = head;
 }
 
 void allocopt(enum algs alg, int size_limit) {

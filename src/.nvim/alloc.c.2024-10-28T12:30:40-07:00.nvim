@@ -10,6 +10,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define ALLOCATED_BLOCK ((struct header *)0xDEADBEEF)
+
 // pointer to head of linked list
 static struct header *head = NULL;
 // pointer to last address on heap
@@ -261,49 +263,50 @@ void *alloc(int size) {
     to_allocate = worst_fit_alg(size);
   }
   split_block(to_allocate, size);
+  to_allocate->next = ALLOCATED_BLOCK;
   void *allocated = (char *)to_allocate + sizeof(struct header);
   return allocated;
 }
 
 void coalesce_below(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
+  struct header *current = (struct header *)starting_heap_address;
+  void *access_limit = (char *)current + current->size;
+  void *current_heap_limit = sbrk(0);
+  if (current_heap_limit == (void *)-1) {
+    perror("sbrk() error");
+    exit(EXIT_FAILURE);
   }
-  struct header *current = head;
-  while (current != NULL) {
-    if (block == (struct header *)((char *)current + current->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)current, block->size + current->size);
-      return;
+  while (access_limit <= current_heap_limit) {
+    if (((struct header *)((char *)current + current->size)) == block) {
+      if (current->next != ALLOCATED_BLOCK) {
+        remove_from_linked_list(current);
+        add_to_linked_list(current, current->size + block->size);
+        break;
+      }
     }
-    current = current->next;
+    current = (struct header *)((char *)current + current->size);
   }
+  return;
 }
 
 void coalesce_above(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
+  struct header *current = (struct header *)starting_heap_address;
+  void *access_limit = (char *)current + current->size;
+  void *current_heap_limit = sbrk(0);
+  if (current_heap_limit == (void *)-1) {
+    perror("sbrk() error");
+    exit(EXIT_FAILURE);
   }
-  struct header *current = head;
-  while (current != NULL) {
-    if (current == (struct header *)((char *)block + block->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)block, block->size + current->size);
-      return;
+  while (access_limit <= current_heap_limit) {
+    if (((struct header *)((char *)block + block->size)) == current) {
+      if (current != ALLOCATED_BLOCK) {
+        remove_from_linked_list(current);
+        add_to_linked_list(block, current->size + block->size);
+        break;
+      }
     }
-    current = current->next;
+    current = (struct header *)((char *)current + current->size);
   }
-}
-
-void coalesce(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  coalesce_above(block);
-  coalesce_below(block);
   return;
 }
 

@@ -265,58 +265,7 @@ void *alloc(int size) {
   return allocated;
 }
 
-void coalesce_below(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  struct header *current = head;
-  while (current != NULL) {
-    if (block == (struct header *)((char *)current + current->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)current, block->size + current->size);
-      return;
-    }
-    current = current->next;
-  }
-}
-
-void coalesce_above(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  struct header *current = head;
-  while (current != NULL) {
-    if (current == (struct header *)((char *)block + block->size)) {
-      remove_from_linked_list(current);
-      add_to_linked_list((void *)block, block->size + current->size);
-      return;
-    }
-    current = current->next;
-  }
-}
-
-void coalesce(struct header *block) {
-  if (head == NULL) {
-    add_to_linked_list(block, block->size);
-    return;
-  }
-  coalesce_above(block);
-  coalesce_below(block);
-  return;
-}
-
-void dealloc(void *to_free) {
-  if (to_free == NULL) {
-    return;
-  }
-
-  struct header *header_to_free =
-      (struct header *)((char *)to_free - sizeof(struct header));
-  coalesce_above(header_to_free);
-  coalesce_below(header_to_free);
-}
+void dealloc(void *to_free) {}
 
 void allocopt(enum algs alg, int size_limit) {
   current_alg = alg;
@@ -328,8 +277,6 @@ void allocopt(enum algs alg, int size_limit) {
   largest_free_chunk_size = 0;
   smallest_free_chunk_size = INT_MAX;
 
-  head = NULL;
-
   // reset program brk
   if (starting_heap_address != NULL) {
     if (brk(starting_heap_address) == -1) {
@@ -337,7 +284,6 @@ void allocopt(enum algs alg, int size_limit) {
       exit(EXIT_FAILURE);
     }
   }
-  current_heap_size = 0;
 }
 
 struct allocinfo allocinfo(void) {
