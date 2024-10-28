@@ -1,0 +1,214 @@
+#include "alloc.h"
+#include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+// pointer to head of linked list
+static struct header *head = NULL;
+
+// static variables for allocopt()
+static enum algs current_alg = FIRST_FIT;
+static int heap_limit = 256;
+static int current_heap_size = 0;
+
+// static variables for allocinfo() - info on LINKED LIST
+static int free_size = 0;
+static int free_chunks = 0;
+static int largest_free_chunk_size = 0;
+static int smallest_free_chunk_size = 0;
+
+void *increase_heap_size() {
+  if (current_heap_size + INCREMENT > heap_limit) {
+    return (NULL);
+  }
+  void *block = sbrk(INCREMENT);
+  if (block == (void *)-1) {
+    perror("sbrk() error");
+    exit(EXIT_FAILURE);
+  }
+  current_heap_size += INCREMENT;
+  return block;
+}
+
+void add_to_linked_list(void *ptr, int block_size) {
+  // get specific free size in the block
+  int block_free_size = block_size - sizeof(struct header);
+
+  // insert header to block
+  struct header *new_header = (struct header *)ptr;
+
+  // add block to start of linked list
+  new_header->size = block_size;
+  new_header->next = head;
+  head = new_header;
+
+  // update info
+  free_size += block_free_size;
+  free_chunks++;
+  if (block_free_size > largest_free_chunk_size) {
+    largest_free_chunk_size = block_free_size;
+  }
+  if (block_free_size < smallest_free_chunk_size) {
+    smallest_free_chunk_size = block_free_size;
+  }
+}
+
+int find_largest_chunk_size() {
+  struct header *current = head;
+  int largest = head->size;
+  while (current->next != NULL) {
+    if (current->size > largest) {
+      largest = current->size;
+    }
+    current = current->next;
+  }
+  if (current->size > largest) {
+    largest = current->size;
+  }
+  return largest;
+}
+
+int find_smallest_chunk_size() {
+  struct header *current = head;
+  int smallest = head->size;
+  while (current->next != NULL) {
+    if (current->size < smallest) {
+      smallest = current->size;
+    }
+    current = current->next;
+  }
+  if (current->size < smallest) {
+    smallest = current->size;
+  }
+  return smallest;
+}
+
+struct header *remove_next_from_linked_list(struct header *before_remove) {
+  struct header *to_allocate = before_remove->next;
+  before_remove->next = before_remove->next->next;
+
+  free_size -= (to_allocate->size - sizeof(struct header));
+  free_chunks--;
+  if (to_allocate->size == largest_free_chunk_size) {
+    largest_free_chunk_size = find_largest_chunk_size();
+  }
+  if (to_allocate->size == smallest_free_chunk_size) {
+    smallest_free_chunk_size = find_smallest_chunk_size();
+  }
+  return to_allocate;
+}
+
+int get_ceiling(double num) {
+  int int_part = (int)num;
+  if (num > int_part) {
+    return int_part + 1;
+  } else {
+    return int_part;
+  }
+}
+
+struct header *first_fit_alg(int wanted_size) {
+  struct header *current = head;
+  struct header *to_allocate = NULL;
+  while (current->next != NULL) {
+    if (((current->next->size) - sizeof(struct header)) >= wanted_size) {
+      to_allocate = remove_next_from_linked_list(current);
+      return to_allocate;
+    }
+  }
+  to_allocate = current->next;
+  return to_allocate;
+}
+
+void *best_fit_alg(int wanted_size) {
+  struct header *current = head;
+  struct header *to_allocate = NULL;
+  while (current->next != NULL) {
+    if (current->size - sizeof(struct header) >= wanted_size) {
+      if (current->size < smallest) {
+        
+      }
+    }
+  }
+
+  return NULL;
+}
+
+void *worst_fit_alg(int wanted_size) { return NULL; }
+
+void *split_block(struct header *to_allocate, int requested_size) {
+  if (to_allocate == NULL) {
+    return NULL;
+  }
+  if ((to_allocate->size - sizeof(struct header) - requested_size) <=
+      sizeof(struct header)) {
+    void *allocated = (char *)to_allocate + sizeof(struct header);
+    return allocated;
+  } else {
+    void *free_block =
+        (char *)to_allocate + sizeof(struct header) + requested_size;
+    int free_block_size =
+        to_allocate->size - requested_size - sizeof(struct header);
+    add_to_linked_list(free_block, free_block_size);
+    void *allocated = (char *)to_allocate + sizeof(struct header);
+    return allocated;
+  }
+}
+
+void *alloc(int size) {
+  struct header *to_allocate = NULL;
+  // if theres not a big enough free block
+  if ((size + sizeof(struct header)) > largest_free_chunk_size) {
+    double temp = (size + sizeof(struct header)) / INCREMENT;
+    int times_to_increment = get_ceiling(temp);
+    void *block = increase_heap_size();
+    if (block == NULL) {
+      return NULL;
+    }
+    for (int i = 1; i < times_to_increment; i++) {
+      if (increase_heap_size() == NULL) {
+        return NULL;
+      }
+    }
+    add_to_linked_list(block, INCREMENT * times_to_increment);
+  }
+  if (current_alg == FIRST_FIT) {
+    to_allocate = first_fit_alg(size);
+  } else if (current_alg == BEST_FIT) {
+    to_allocate = best_fit_alg(size);
+  } else {
+    to_allocate = worst_fit_alg(size);
+  }
+  void *allocated = split_block(to_allocate, size);
+
+  return allocated;
+}
+
+void dealloc(void *to_free) {}
+
+void allocopt(enum algs alg, int size_limit) {
+  current_alg = alg;
+  heap_limit = size_limit;
+
+  // reset allocinfo variables
+  free_size = 0;
+  free_chunks = 0;
+  largest_free_chunk_size = 0;
+  smallest_free_chunk_size = 0;
+
+  // reset program brk
+}
+
+struct allocinfo allocinfo(void) {
+  struct allocinfo heap_info;
+
+  heap_info.free_size = free_size;
+  heap_info.free_chunks = free_chunks;
+  heap_info.largest_free_chunk_size = largest_free_chunk_size;
+  heap_info.smallest_free_chunk_size = smallest_free_chunk_size;
+
+  return heap_info;
+}

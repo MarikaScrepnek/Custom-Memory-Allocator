@@ -1,0 +1,29 @@
+#include "alloc.h"
+static enum algs current_alg;
+static int size_limit;
+
+static int free_size;
+static int free_chunks;
+static int largest_free_chunk_size;
+static int smallest_free_chunk_size;
+
+void *alloc(int size) {
+  void *allocated_space;
+
+  return allocated_space;
+}
+
+void dealloc(void *to_free) {}
+
+void allocopt(enum algs alg, int size_limit) {}
+
+struct allocinfo allocinfo(void) {
+  struct allocinfo heap_info;
+
+  heap_info.free_size = free_size;
+  heap_info.free_chunks = free_chunks;
+  heap_info.largest_free_chunk_size = largest_free_chunk_size;
+  heap_info.smalles_free_chunk_size = smallest_free_chunk_size;
+
+  return heap_info;
+}

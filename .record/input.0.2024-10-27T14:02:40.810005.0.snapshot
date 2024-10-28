@@ -1,0 +1,12 @@
+{"version": 2, "width": 130, "height": 40, "timestamp": 1730062960, "idle_time_limit": 5.0, "env": {"SHELL": "/usr/bin/zsh", "TERM": "xterm-256color"}}
+[0.216091, "o", "\u001b[1m\u001b[7m%\u001b[27m\u001b[1m\u001b[0m                                                                                                                                 \r \r"]
+[0.218883, "o", "\u001b]2;cmpt201@088eb6f02f20:~/units/04-long-assignments/a9-MarikaScrepnek\u0007\u001b]1;..arikaScrepnek\u0007"]
+[0.221716, "o", "\u001b]7;file://088eb6f02f20/home/cmpt201/units/04-long-assignments/a9-MarikaScrepnek\u001b\\"]
+[0.272505, "o", "\r\u001b[0m\u001b[27m\u001b[24m\u001b[J\u001b[35m[recording] \u001b[34m~/units/04-long-assignments/a9-MarikaScrepnek\u001b[32m❯\u001b[39m \u001b[K"]
+[0.273313, "o", "\u001b[?1h\u001b=\u001b[?2004h"]
+[1.170739, "i", "c"]
+[1.176045, "o", "c"]
+[1.184491, "o", "\b\u001b[4mc\u001b[24m"]
+[1.185495, "o", "\b\u001b[4mc\u001b[24m\u001b[92md ../src\u001b[39m\u001b[8D"]
+[1.259046, "i", "d"]
+[1.260674, "o", "\b\u001b[4mc\u001b[39m\u001b[4md\u001b[24m"]

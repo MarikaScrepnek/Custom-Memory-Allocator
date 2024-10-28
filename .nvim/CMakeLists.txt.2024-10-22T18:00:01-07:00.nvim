@@ -1,0 +1,6 @@
+project("A9 Marika Screpnek." LANGUAGES C CXX)
+
+main: /src/main.c
+clang -I /include src/main.c -o main
+
+

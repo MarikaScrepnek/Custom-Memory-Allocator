@@ -1,0 +1,76 @@
+#include "alloc.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+// pointer to head of linked list
+static struct header *head = NULL;
+// static variables for allocopt()
+static enum algs current_alg = FIRST_FIT;
+static int heap_limit = 256;
+
+// static variables for allocinfo() - info on LINKED LIST
+static int free_size = 0;
+static int free_chunks = 0;
+static int largest_free_chunk_size = 0;
+static int smallest_free_chunk_size = 0;
+
+void *alloc(int size) {
+  void *allocated_space;
+  // if heapsize=0 hasnt been called yet
+  if (head == NULL) {
+    head = sbrk(INCREMENT);
+    if (head == (void *)-1) {
+      perror("sbrk() error");
+      exit(EXIT_FAILURE);
+    }
+    free_size = INCREMENT - sizeof(struct header);
+    free_chunks = 1;
+    largest_free_chunk_size = free_size;
+    smallest_free_chunk_size = free_size;
+  }
+  if ((size + sizeof(struct header)) > largest_free_chunk_size) {
+    int times_to_increment = size+sizeof(struct header) / INCREMENT;
+    struct header *new_head = sbrk(INCREMENT);
+    if (new_head == (void *)-1) {
+      perror("sbrk() error");
+      exit(EXIT_FAILURE);
+    }
+    new_head->next = head;
+    head = new_head;
+  }
+  if (current_alg == enum algs FIRST_FIT) {
+  } else if (current_alg == enum algs BEST_FIT) {
+  } else if (current_alg == enum algs WORST_FIT) {
+  }
+
+  return allocated_space;
+}
+
+void dealloc(void *to_free) {}
+
+void allocopt(enum algs alg, int size_limit) {
+  current_alg = alg;
+  heap_limit = size_limit;
+
+  //reset allocinfo variables
+  free_size = 0;
+  free_chunks = 0;
+  largest_free_chunk_size = 0;
+  smallest_free_chunk_size = 0;
+
+  //reset program brk
+  
+}
+
+struct allocinfo allocinfo(void) {
+  struct allocinfo heap_info;
+
+  heap_info.free_size = free_size;
+  heap_info.free_chunks = free_chunks;
+  heap_info.largest_free_chunk_size = largest_free_chunk_size;
+  heap_info.smallest_free_chunk_size = smallest_free_chunk_size;
+
+  return heap_info;
+}
