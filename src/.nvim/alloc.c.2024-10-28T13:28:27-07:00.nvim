@@ -270,8 +270,8 @@ void coalesce_below(struct header *block) {
   while (current != NULL) {
     if (block == (struct header *)((char *)current + current->size)) {
       remove_from_linked_list(current);
-      block->size += current->size;
       block = current;
+      block->size += current->size;
       return;
     }
     current = current->next;

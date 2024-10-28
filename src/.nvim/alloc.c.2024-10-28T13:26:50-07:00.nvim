@@ -265,31 +265,31 @@ void *alloc(int size) {
   return allocated;
 }
 
-void coalesce_below(struct header *block) {
+int coalesce_below(struct header *block) {
   struct header *current = head;
   while (current != NULL) {
     if (block == (struct header *)((char *)current + current->size)) {
       remove_from_linked_list(current);
-      block->size += current->size;
       block = current;
-      return;
+      block->size += current->size;
+      return 1;
     }
     current = current->next;
   }
-  return;
+  return 0;
 }
 
-void coalesce_above(struct header *block) {
+int coalesce_above(struct header *block) {
   struct header *current = head;
   while (current != NULL) {
     if (current == (struct header *)((char *)block + block->size)) {
       remove_from_linked_list(current);
       block->size += current->size;
-      return;
+      return 1;
     }
     current = current->next;
   }
-  return;
+  return 0;
 }
 
 void coalesce(struct header *block) {
@@ -297,8 +297,9 @@ void coalesce(struct header *block) {
     add_to_linked_list(block, block->size);
     return;
   }
-  coalesce_above(block);
-  coalesce_below(block);
+  if (coalesce_above(block) == 0) {
+    coalesce_below(block);
+  }
   add_to_linked_list((void *)block, block->size);
   return;
 }

@@ -270,13 +270,11 @@ void coalesce_below(struct header *block) {
   while (current != NULL) {
     if (block == (struct header *)((char *)current + current->size)) {
       remove_from_linked_list(current);
-      block->size += current->size;
-      block = current;
+      add_to_linked_list((void *)current, block->size + current->size);
       return;
     }
     current = current->next;
   }
-  return;
 }
 
 void coalesce_above(struct header *block) {
@@ -284,12 +282,11 @@ void coalesce_above(struct header *block) {
   while (current != NULL) {
     if (current == (struct header *)((char *)block + block->size)) {
       remove_from_linked_list(current);
-      block->size += current->size;
+      add_to_linked_list((void *)block, block->size + current->size);
       return;
     }
     current = current->next;
   }
-  return;
 }
 
 void coalesce(struct header *block) {
@@ -299,7 +296,6 @@ void coalesce(struct header *block) {
   }
   coalesce_above(block);
   coalesce_below(block);
-  add_to_linked_list((void *)block, block->size);
   return;
 }
 
