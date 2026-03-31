@@ -1,6 +1,6 @@
-# Memory Allocator
+# Custom Memory Allocator
 
-**Memory Allocator** is a C-based project that implements a custom dynamic memory manager similar to `malloc()` and `free()`.  
+**Custom Memory Allocator** is a C-based project that implements a custom dynamic memory manager similar to `malloc()` and `free()`.  
 It demonstrates **heap management, memory allocation strategies, and memory optimization techniques**.
 
 ## Highlights
