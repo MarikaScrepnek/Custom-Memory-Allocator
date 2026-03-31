@@ -21,16 +21,11 @@ It demonstrates **heap management, memory allocation strategies, and memory opti
 
 ```
 src/ # Source code (allocator and test cases)
-
 include/ # Header files
-
 CMakeLists.txt # Build configuration
-
 .gitignore # Clean build ignores
-
 README.md # Project documentation
 ```
-
 
 ## Getting Started
 
